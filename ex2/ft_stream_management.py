@@ -7,6 +7,8 @@ if __name__ == "__main__":
     else:
         print("=== Cyber Archives Recovery & Preservation ===")
         print(f"Accessing file '{sys.argv[1]}'")
+        new_text: str = ""
+        read_success: bool = False
         try:
             f: typing.IO[str] = open(sys.argv[1])
             text: str = f.read()
@@ -22,31 +24,33 @@ if __name__ == "__main__":
             new_lines: list[str] = []
             for line in lines:
                 new_lines.append(line + "#")
-            new_text: str = "\n".join(new_lines)
+            new_text = "\n".join(new_lines)
             print("---\n")
             print(f"{new_text}")
             print("\n---")
             f.close()
+            read_success = True
         except OSError as e:
             sys.stderr.write(
-                f"[STDERR] Error opening file '{sys.argv[1]}': {e}"
+                f"[STDERR] Error opening file '{sys.argv[1]}': {e}\n"
             )
             sys.stderr.flush()
-        sys.stdout.write("Enter new file name (or empty): ")
-        sys.stdout.flush()
-        file_name: str = sys.stdin.readline().rstrip("\n")
-        if file_name == "":
-            print("Not saving data.")
-        else:
-            print(f"Saving data to '{file_name}'")
-            try:
-                new_file: typing.IO[str] = open(file_name, "w")
-                new_file.write(new_text)
-                new_file.close()
-                print(f"Data saved in file '{file_name}'.")
-            except OSError as e:
-                sys.stderr.write(
-                    f"[STDERR] Error opening file '{file_name}': {e}\n"
-                )
-                sys.stderr.flush()
-                print("Data not saved.")
+        if read_success:
+            sys.stdout.write("Enter new file name (or empty): ")
+            sys.stdout.flush()
+            file_name: str = sys.stdin.readline().rstrip("\n")
+            if file_name == "":
+                print("Not saving data.")
+            else:
+                print(f"Saving data to '{file_name}'")
+                try:
+                    new_file: typing.IO[str] = open(file_name, "w")
+                    new_file.write(new_text)
+                    new_file.close()
+                    print(f"Data saved in file '{file_name}'.")
+                except OSError as e:
+                    sys.stderr.write(
+                        f"[STDERR] Error opening file '{file_name}': {e}\n"
+                    )
+                    sys.stderr.flush()
+                    print("Data not saved.")
